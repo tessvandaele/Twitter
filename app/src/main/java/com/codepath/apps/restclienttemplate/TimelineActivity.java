@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -26,6 +29,7 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
+    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,7 @@ public class TimelineActivity extends AppCompatActivity {
 
         //find the recycler view
         rvTweets = findViewById(R.id.rvTweets);
+        btnLogout = findViewById(R.id.btnLogout);
 
         //initialize the list of tweets and adapter
         tweets = new ArrayList<>();
@@ -45,6 +50,14 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
         populateHomeTimeline();
+
+        //log out button functionality
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLogoutClick();
+            }
+        });
     }
 
     private void populateHomeTimeline() {
@@ -67,5 +80,11 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.d(TAG, "onFailure!", throwable);
             }
         });
+    }
+
+    //method for loging out of twitter account
+    private void onLogoutClick() {
+        client.clearAccessToken();
+        finish();
     }
 }
