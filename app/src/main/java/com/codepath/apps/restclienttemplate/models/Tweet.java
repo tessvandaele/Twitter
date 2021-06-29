@@ -14,18 +14,22 @@ public class Tweet {
     public String body;
     public String createdAt;
     public User user;
+    public Entities entities;
 
     //empty constructor needed by parceler library
     public Tweet(){}
 
+    //converts jsonObject into tweet
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
         tweet.body = jsonObject.getString("text");
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+        tweet.entities = Entities.fromJson(jsonObject.getJSONObject("entities"));
         return tweet;
     }
 
+    //converts jsonArray to list of tweets
     public static List<Tweet> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Tweet> tweets = new ArrayList<>();
         for(int i = 0; i < jsonArray.length(); i++) {

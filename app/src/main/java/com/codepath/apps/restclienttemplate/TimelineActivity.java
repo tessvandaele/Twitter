@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.nfc.Tag;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.codepath.apps.restclienttemplate.models.Entities;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
@@ -35,6 +37,7 @@ public class TimelineActivity extends AppCompatActivity {
     //all views from activity timeline xml
     RecyclerView rvTweets;
     Button btnLogout;
+    SwipeRefreshLayout swipeContainer;
 
     TwitterClient client;
     List<Tweet> tweets;
@@ -50,6 +53,21 @@ public class TimelineActivity extends AppCompatActivity {
         //find the recycler view
         rvTweets = findViewById(R.id.rvTweets);
         btnLogout = findViewById(R.id.btnLogout);
+        swipeContainer = findViewById(R.id.swipeContainer);
+
+        //setup refresh listener to trigger new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchTimelineAsync(0);
+            }
+        });
+
+        //refresh color configurations
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         //initialize the list of tweets and adapter
         tweets = new ArrayList<>();
@@ -130,5 +148,28 @@ public class TimelineActivity extends AppCompatActivity {
     private void onLogoutClick() {
         client.clearAccessToken();
         finish();
+    }
+
+    //sends the Twitter API a request to fetch updated data
+    public void fetchTimelineAsync(int page) {
+        client.getHomeTimeline(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                adapter.clear();
+                try {
+                    Log.i(TAG, "onSuccess!!");
+                    adapter.addAll(Tweet.fromJsonArray(json.jsonArray));
+                    adapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.d(TAG, "Fetch timeline error", throwable);
+            }
+        });
     }
 }
