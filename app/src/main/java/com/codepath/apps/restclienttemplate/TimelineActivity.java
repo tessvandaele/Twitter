@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +30,15 @@ import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
-    TwitterClient client;
+    private final int REQUEST_CODE = 20;
+
+    //all views from activity timeline xml
     RecyclerView rvTweets;
+    Button btnLogout;
+
+    TwitterClient client;
     List<Tweet> tweets;
     TweetsAdapter adapter;
-    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,23 +69,41 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }
 
+    //inflates the menu and adds items to the action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-
+    //functionality for the compose tweet button
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.compose) {
             //compose icon was clicked; navigate to compose activity
             Intent intent = new Intent(this, ComposeActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE);
+            return true;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
+    //returns the data from a child activity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            //get data from the intent
+            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
+            //update recycler view with new tweet
+            tweets.add(0, tweet);
+            adapter.notifyItemInserted(0);
+            //reset to position 0 of recycler view
+            rvTweets.smoothScrollToPosition(0);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    //creates json array of timeline data and populates the timeline recycler view
     private void populateHomeTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
@@ -102,7 +126,7 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }
 
-    //method for loging out of twitter account
+    //method for logging out of twitter account
     private void onLogoutClick() {
         client.clearAccessToken();
         finish();
