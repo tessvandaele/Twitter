@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -26,7 +27,7 @@ import java.util.List;
 
 import okhttp3.Headers;
 
-public class TimelineActivity extends AppCompatActivity {
+public class TimelineActivity extends AppCompatActivity implements ComposeDialogFragment.EditNameDialogListener {
 
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
@@ -107,9 +108,8 @@ public class TimelineActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.compose) {
-            //compose icon was clicked; navigate to compose activity
-            Intent intent = new Intent(this, ComposeActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
+            //compose icon was clicked; navigate to compose modal
+            showEditDialog();
             return true;
         }
         if(item.getItemId() == R.id.logout) {
@@ -118,21 +118,6 @@ public class TimelineActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //returns the data from a child activity
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            //get data from the intent
-            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
-            //update recycler view with new tweet
-            tweets.add(0, tweet);
-            adapter.notifyItemInserted(0);
-            //reset to position 0 of recycler view
-            rvTweets.smoothScrollToPosition(0);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     //creates json array of timeline data and populates the timeline recycler view
@@ -202,8 +187,24 @@ public class TimelineActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-
+                Log.d(TAG, "Fetch timeline error", throwable);
             }
         });
+    }
+
+    //displays compose modal fragment
+    public void showEditDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        ComposeDialogFragment composeDialogFragment = new ComposeDialogFragment();
+        composeDialogFragment.show(fm, "Compose fragment");
+    }
+
+    //receives the tweet from the dialog fragment class to manually insert into tweets
+    @Override
+    public void onFinishEditDialog(Tweet tweet) {
+        tweets.add(0, tweet);
+        adapter.notifyItemInserted(0);
+        //reset to position 0 of recycler view
+        rvTweets.smoothScrollToPosition(0);
     }
 }
