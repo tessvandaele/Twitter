@@ -1,4 +1,4 @@
-# Project 1 - *Twitter*
+# Project 2 - *Twitter*
 
 **Twitter** is an android app that allows a user to log in to their Twitter account, view their home timeline, and post a tweet.
 
@@ -12,7 +12,7 @@ The following **required** functionality is completed:
 
 * [x] User can **log in** to their Twitter account
 * [x] User can **view and scroll through the home timeline** to view the tweets of users they follow
-* [ ] User can **post a tweet** to their account and view their **character limit** as they type
+* [x] User can **post a tweet** to their account and view their **character limit** as they type
 * [x] User can **log out** of their Twitter account
 * [x] User can **pull upward to refresh** their timeline
 * [x] User can **view images** in tweets
@@ -25,20 +25,20 @@ The following **bonus** features are implemented:
         - Twitter icons and coloring were added where applicable
         - A toolbar was added for easy navigation between actions
 
-* [x] User can view more tweets as they scroll with **Endless Scrolling**
+* [x] User can view more tweets as they scroll with **endless scrolling**
 * [x] A **modal overlay** was used for the compose screen
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='FlixsterDemo.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='TwitterDemo.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCAP](https://www.cockos.com/licecap/).
 
 ## Notes
 
-Implementing the modal overlay was challenging to understand as I could no longer use Intents which is something I am more comfortabe with. Instead, using the DialogListener allowed me to recreate the bahavior I was creating with Intents. 
+Implementing the modal overlay was challenging to understand since I could no longer use Intents which is something I am more comfortabe with. Instead, using the DialogListener allowed me to recreate the bahavior I was creating with Intents. 
 
 ## License
 
