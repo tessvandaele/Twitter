@@ -1,4 +1,4 @@
-# Project 2 - *Twitter*
+# Project 3 - *Twitter*
 
 **Twitter** is an android app that allows a user to log in to their Twitter account, view their home timeline, and post a tweet.
 
@@ -38,7 +38,7 @@ GIF created with [LiceCAP](https://www.cockos.com/licecap/).
 
 ## Notes
 
-Implementing the modal overlay was challenging to understand since I could no longer use Intents which is something I am more comfortabe with. Instead, using the DialogListener allowed me to recreate the bahavior I was creating with Intents. 
+Implementing the modal overlay was challenging to understand since I could no longer use Intents which is something I am more comfortabe with. Instead, using the DialogListener allowed me to recreate the bahavior I was creating with Intents. Specifically, the use of an interface ensured that a posted tweet would be passed back to the timeline activity for updating.
 
 ## License
 
