@@ -115,7 +115,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
         if(item.getItemId() == R.id.logout) {
             //logout button clicked
             client.clearAccessToken();
-            finish();
+
+            // navigate backwards to Login screen
+            Intent i = new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // this makes sure the Back button won't work
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // same as above
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -97,8 +97,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
             Glide.with(context)
                     .load(tweet.entities.media.get(0).displayUrl)
-                    .override(1000, 500)
                     .centerCrop()
+                    .transform(new RoundedCornersTransformation(30, 0))
                     .into(ivMedia);
 
             tvTimeStamp.setText(getRelativeTimeAgo(tweet.createdAt));
