@@ -15,6 +15,7 @@ public class Tweet {
     public String createdAt;
     public User user;
     public Entities entities;
+    public long id;
 
     //empty constructor needed by parceler library
     public Tweet(){}
@@ -26,6 +27,7 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.entities = Entities.fromJson(jsonObject.getJSONObject("entities"));
+        tweet.id = jsonObject.getLong("id");
         return tweet;
     }
 

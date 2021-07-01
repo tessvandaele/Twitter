@@ -2,12 +2,14 @@ package com.codepath.apps.restclienttemplate;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
@@ -23,9 +25,12 @@ public class ComposeActivity extends AppCompatActivity {
     public static final int MAX_TWEET_LENGTH = 140;
     public static final String TAG = "ComposeActivity";
 
+    public Context context = this;
+
     //activity_compose xml views
     EditText etCompose;
     Button btnTweet;
+    ImageButton btnClose;
 
     //Twitter client to post tweet to Twitter API
     TwitterClient client;
@@ -39,6 +44,7 @@ public class ComposeActivity extends AppCompatActivity {
 
         etCompose = findViewById(R.id.etCompose);
         btnTweet = findViewById(R.id.btnTweet);
+        btnClose = findViewById(R.id.btnClose);
 
         //add a click listener on tweet button
         btnTweet.setOnClickListener(new View.OnClickListener() {
@@ -83,9 +89,14 @@ public class ComposeActivity extends AppCompatActivity {
                         Log.e(TAG, "onFailure to publish tweet", throwable);
                     }
                 });
+            }
+        });
 
-
-
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, TimelineActivity.class);
+                startActivity(intent);
             }
         });
     }

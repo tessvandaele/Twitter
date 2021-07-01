@@ -2,21 +2,18 @@ package com.codepath.apps.restclienttemplate;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.codepath.apps.restclienttemplate.models.Entities;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
@@ -33,15 +30,18 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
+    long last_id;
 
     //all views from activity timeline xml
     RecyclerView rvTweets;
     Button btnLogout;
     SwipeRefreshLayout swipeContainer;
+    Toolbar toolbar;
 
     TwitterClient client;
-    List<Tweet> tweets;
     TweetsAdapter adapter;
+    List<Tweet> tweets;
+    EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +54,8 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets = findViewById(R.id.rvTweets);
         btnLogout = findViewById(R.id.btnLogout);
         swipeContainer = findViewById(R.id.swipeContainer);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //setup refresh listener to trigger new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -76,15 +78,22 @@ public class TimelineActivity extends AppCompatActivity {
         //recycler view setup (layout manager and adapter)
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
-        populateHomeTimeline();
 
-        //log out button functionality
-        btnLogout.setOnClickListener(new View.OnClickListener() {
+        //layout manager for endless scroll
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
-            public void onClick(View v) {
-                onLogoutClick();
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.d(TAG, "onLoadMore");
+                //called when new data needs to be added to the list
+                loadNextData();
+
             }
-        });
+        };
+        rvTweets.addOnScrollListener(scrollListener);
+
+        populateHomeTimeline();
     }
 
     //inflates the menu and adds items to the action bar
@@ -102,6 +111,11 @@ public class TimelineActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ComposeActivity.class);
             startActivityForResult(intent, REQUEST_CODE);
             return true;
+        }
+        if(item.getItemId() == R.id.logout) {
+            //logout button clicked
+            client.clearAccessToken();
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -128,9 +142,12 @@ public class TimelineActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 JSONArray jsonArray = json.jsonArray;
                 try {
+                    //add all tweets in json array to tweets list
                     Log.d(TAG, "Successful load");
                     tweets.addAll(Tweet.fromJsonArray(jsonArray));
+                    //notify adapter of new tweet data
                     adapter.notifyDataSetChanged();
+                    last_id = tweets.get(tweets.size() - 1).id;
                 } catch (JSONException e) {
                     Log.d(TAG, "Json Exception", e);
                     e.printStackTrace();
@@ -144,12 +161,6 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }
 
-    //method for logging out of twitter account
-    private void onLogoutClick() {
-        client.clearAccessToken();
-        finish();
-    }
-
     //sends the Twitter API a request to fetch updated data
     public void fetchTimelineAsync(int page) {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
@@ -161,6 +172,7 @@ public class TimelineActivity extends AppCompatActivity {
                     adapter.addAll(Tweet.fromJsonArray(json.jsonArray));
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
+                    last_id = tweets.get(tweets.size() - 1).id;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -169,6 +181,28 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.d(TAG, "Fetch timeline error", throwable);
+            }
+        });
+    }
+
+    //loads the next 25 tweets from the API
+    private void loadNextData() {
+        client.homeTimelineRefresh(last_id, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                try {
+                    tweets.addAll(Tweet.fromJsonArray(json.jsonArray));
+                    adapter.notifyDataSetChanged();
+                    last_id = tweets.get(tweets.size() - 1).id;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
             }
         });
     }

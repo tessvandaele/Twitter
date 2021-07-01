@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder>{
 
     Context context;
@@ -68,6 +70,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvBody;
         TextView tvTimeStamp;
         ImageView ivMedia;
+        TextView tvName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,18 +80,25 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody = itemView.findViewById(R.id.tvBody);
             tvTimeStamp = itemView.findViewById(R.id.tvTimeStamp);
             ivMedia = itemView.findViewById(R.id.ivMedia);
+            tvName = itemView.findViewById(R.id.tvName);
         }
 
+        //binding all tweet data to the correct view
         public void bind(Tweet tweet) {
-            tvScreenName.setText(tweet.user.screenName);
+            tvScreenName.setText("@" + tweet.user.screenName);
             tvBody.setText(tweet.body);
+            tvName.setText(tweet.user.name);
 
             Glide.with(context)
                     .load(tweet.user.profileImageUrl)
+                    .circleCrop()
+                    .transform(new RoundedCornersTransformation(30, 0))
                     .into(ivProfileImage);
 
             Glide.with(context)
                     .load(tweet.entities.media.get(0).displayUrl)
+                    .override(1000, 500)
+                    .centerCrop()
                     .into(ivMedia);
 
             tvTimeStamp.setText(getRelativeTimeAgo(tweet.createdAt));

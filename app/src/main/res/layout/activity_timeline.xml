@@ -9,11 +9,10 @@
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="680dp"
-        android:layout_above="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="0dp"
@@ -32,11 +31,15 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <Button
-        android:id="@+id/btnLogout"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Log out" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/twitter_blue"
+        android:clickable="false"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:navigationIcon="@drawable/ic_logo_white" />
 </RelativeLayout>

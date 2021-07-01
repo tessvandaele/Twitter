@@ -11,10 +11,12 @@
         android:id="@+id/tiLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/imageView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
         app:counterEnabled="true"
         app:counterMaxLength="140"
-        app:counterOverflowTextAppearance="@style/TextAppearance.AppCompat.Small"
-        app:counterTextAppearance="@style/TextAppearance.AppCompat.Body1">
+        app:counterOverflowTextAppearance="@style/TextAppearance.AppCompat.Small">
 
         <EditText
             android:id="@+id/etCompose"
@@ -28,16 +30,42 @@
             android:gravity="start|top"
             android:hint="What's happening?"
             android:inputType="textMultiLine"
-            android:minLines="5" />
+            android:minLines="15" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnTweet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tiLayout"
+        android:layout_below="@+id/tiLayout"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="false"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="26dp"
+        android:text="tweet" />
+
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="#00FFFFFF"
+        android:scaleX="1.6"
+        android:scaleY="1.6"
+        android:src="@drawable/ic_close_blue"
+        tools:srcCompat="@drawable/ic_close_blue" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
-        android:text="tweet" />
+        tools:srcCompat="@tools:sample/avatars" />
 </RelativeLayout>
